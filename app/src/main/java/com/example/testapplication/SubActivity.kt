@@ -11,16 +11,31 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.example.testapplication.databinding.Activity2Binding
+import com.example.testapplication.databinding.HomeBinding
 import net.daum.mf.map.api.MapView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-class SubActivity: AppCompatActivity() {
+class SubActivity: Fragment() {
     private lateinit var binding : Activity2Binding
     private val ACCESS_FINE_LOCATION = 1000
+    companion object {
+        const val BASE_URL = "https://dapi.kakao.com/"
+        const val API_KEY = "KakaoAK daa9b1c9c800a07a7783c444a3b65b4e" // REST API 키
+    }
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,19 +45,22 @@ class SubActivity: AppCompatActivity() {
         setContentView(view)
 
         binding.buttonLocationOn.setOnClickListener {
-            Toast.makeText(this, "dkdkdkkd", Toast.LENGTH_SHORT).show()
             if (checkLocationService()) {
                 // GPS가 켜져있을 경우
                 permissionCheck()
+
             } else {
                 // GPS가 꺼져있을 경우
                 Toast.makeText(this, "GPS를 켜주세요", Toast.LENGTH_SHORT).show()
             }
         }
         binding.buttonLocationOff.setOnClickListener {
-            Toast.makeText(this, "nononono", Toast.LENGTH_SHORT).show()
             stopTracking()
         }
+        binding.buttonSearch.setOnClickListener {
+            searchKeyword("광운대")
+        }
+
     }
     private fun permissionCheck() {
         val preference = getPreferences(MODE_PRIVATE)
@@ -128,5 +146,30 @@ class SubActivity: AppCompatActivity() {
     }
     private fun stopTracking() {
         binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOff
+    }
+    private fun searchKeyword(keyword: String) {
+        val retrofit = Retrofit.Builder() // Retrofit 구성
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(KakaoAPI::class.java) // 통신 인터페이스를 객체로 생성
+        val call = api.getSearchKeyword(API_KEY, keyword) // 검색 조건 입력
+
+        // API 서버에 요청
+        call.enqueue(object: Callback<ResultSearchKeyword> {
+            override fun onResponse(
+                call: Call<ResultSearchKeyword>,
+                response: Response<ResultSearchKeyword>
+            ) {
+                // 통신 성공 (검색 결과는 response.body()에 담겨있음)
+                Log.d("Test", "Raw: ${response.raw()}")
+                Log.d("Test", "Body: ${response.body()}")
+            }
+
+            override fun onFailure(call: Call<ResultSearchKeyword>, t: Throwable) {
+                // 통신 실패
+                Log.w("MainActivity", "통신 실패: ${t.message}")
+            }
+        })
     }
 }

@@ -6,32 +6,39 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <net.daum.mf.map.api.MapView
-        android:id="@+id/mapView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="90"/>
+        android:layout_height="match_parent"
+        android:layout_weight="50">
+
+        <net.daum.mf.map.api.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="90"
+            tools:layout_editor_absoluteY="699dp" />
+
+        <Button
+            android:id="@+id/button_location_On"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="5dp"
+            android:text="On"/>
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="5"
-        android:orientation="horizontal"
-        android:name="com.google.android.gms.maps.pFragmMaent">
+        android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/button_Search"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Button" />
-
-        <Button
-            android:id="@+id/button_location_On"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="On" />
+            android:text="Search" />
 
         <Button
             android:id="@+id/button_Location_Off"
